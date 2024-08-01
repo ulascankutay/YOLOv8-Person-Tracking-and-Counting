@@ -11,23 +11,23 @@ classNames = ["person"]
 mask = cv2.imread("cepmaske.jpg")
 
 # Tracking
-tracker = Sort(max_age=5, min_hits=3, iou_threshold=0.3)
+tracker = Sort(max_age=30, min_hits=2, iou_threshold=0.2)
 
 prev_frame_time = 0
 new_frame_time = 0
 
-cap = cv2.VideoCapture("batu.mp4")
+cap = cv2.VideoCapture("son.mp4")
 
 # video kayıt için fourcc ve VideoWriter tanımlama
 cv2_fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 success, img = cap.read()
-cv2.imwrite("cepkamera.jpg", img)
+cv2.imwrite("/home/ulascan/Desktop/Nesne Tanıma/cepkamera.jpg", img)
 size = list(img.shape)
 del size[2]
 size.reverse()
-video = cv2.VideoWriter("SONUC.mp4", cv2_fourcc, 24, size) #output video name, fourcc, fps, size
+video = cv2.VideoWriter("SONUC.mp4", cv2_fourcc, 60, size) #output video name, fourcc, fps, size
 
-model = YOLO("yolov5nu.pt")
+model = YOLO("yolov8n.pt")
 
 # Çizgi sınırları (giriş ve çıkış tespiti için)
 limits = [317, 331, 623, 315]
