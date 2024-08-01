@@ -6,21 +6,12 @@ import time
 import numpy as np
 from sort import *
 
-classNames = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck", "boat",
-              "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat",
-              "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", "backpack", "umbrella",
-              "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard", "sports ball", "kite", "baseball bat",
-              "baseball glove", "skateboard", "surfboard", "tennis racket", "bottle", "wine glass", "cup",
-              "fork", "knife", "spoon", "bowl", "banana", "apple", "sandwich", "orange", "broccoli",
-              "carrot", "hot dog", "pizza", "donut", "cake", "chair", "sofa", "pottedplant", "bed",
-              "diningtable", "toilet", "tvmonitor", "laptop", "mouse", "remote", "keyboard", "cell phone",
-              "microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors",
-              "teddy bear", "hair drier", "toothbrush"]
+classNames = ["person"]
 
 mask = cv2.imread("cepmaske.jpg")
 
 # Tracking
-tracker = Sort(max_age=20, min_hits=3, iou_threshold=0.3)
+tracker = Sort(max_age=5, min_hits=3, iou_threshold=0.3)
 
 prev_frame_time = 0
 new_frame_time = 0
@@ -36,7 +27,7 @@ del size[2]
 size.reverse()
 video = cv2.VideoWriter("SONUC.mp4", cv2_fourcc, 24, size) #output video name, fourcc, fps, size
 
-model = YOLO("yolov8n.pt")
+model = YOLO("yolov5nu.pt")
 
 # Çizgi sınırları (giriş ve çıkış tespiti için)
 limits = [317, 331, 623, 315]
@@ -68,8 +59,9 @@ while True:
             conf = math.ceil((box.conf[0] * 100)) / 100
             # Class Name
             cls = int(box.cls[0])
-            currentArray = np.array([x1, y1, x2, y2, conf])
-            detections = np.vstack((detections, currentArray))
+            if cls == 0:
+                currentArray = np.array([x1, y1, x2, y2, conf])
+                detections = np.vstack((detections, currentArray))
 
     resultsTracker = tracker.update(detections)
 
@@ -106,8 +98,8 @@ while True:
                             cv2.line(img, (limits[0], limits[1]), (limits[2], limits[3]), (0, 255, 0), 5)
             trackedObjects[id] = [cx, cy]
 
-    cv2.putText(img, f'Entries: {len(enteredIDs)}', (255, 100), cv2.FONT_HERSHEY_PLAIN, 5, (50, 50, 255), 8)
-    cv2.putText(img, f'Exits: {len(exitedIDs)}', (255, 200), cv2.FONT_HERSHEY_PLAIN, 5, (50, 50, 255), 8)
+    cv2.putText(img, f'Giris: {len(enteredIDs)}', (30, 50), cv2.FONT_HERSHEY_PLAIN, 3, (50, 50, 255), 5)
+    cv2.putText(img, f'Cikis: {len(exitedIDs)}', (30, 125), cv2.FONT_HERSHEY_PLAIN, 3, (50, 50, 255), 5)
 
     # video kayıt
     video.write(img)
